@@ -1,7 +1,7 @@
 # MicroTetra887
 <b>Two-player "Tetra" through 16-color VGA on a PIC16F887</b><br>
 
-The goal of this project was as challenge to do more with less.  I have used the PIC24 and PIC32 various times to generate VGA signals and play video games, but the PIC16 has far less capability.  "Tetra" is very easy to implement and one of my favorite games, so it was the target for this device.  Space allowed for there to be two players simultaneously.
+The goal of this project was a challenge to do more with less.  I have used the PIC24 and PIC32 various times to generate VGA signals and play video games, but the PIC16 has far less capability.  "Tetra" is very easy to implement and one of my favorite games, so it was the target for this device.  Space allowed for there to be two players simultaneously.
 
 Specifications:<br>
 - Only IC will be the PIC16F887<br>
