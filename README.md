@@ -10,5 +10,7 @@ Specifications:<br>
 - VGA resolution of 24x22 pixels at 16 colors<br>
 - Two-player "Tetra" through Genesis controllers<br>
 
+This is a work-in-progress.  This project will eventually use a PCB and have updated code.
+
 <table><tr><td><img src="MicroTetra887-Prototype.jpg"></td><td><img src="MicroTetra887-Gameplay.jpg"></td></tr></table>
 
