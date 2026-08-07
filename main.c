@@ -125,9 +125,9 @@ const unsigned char map_szt[72] = {
 	0x00, 0xFF, 0xFF,
 	0x00, 0x00, 0x00,
 
-	0x00, 0xFF, 0x00,
-	0x00, 0xFF, 0xFF,
 	0x00, 0x00, 0xFF,
+	0x00, 0xFF, 0xFF,
+	0x00, 0xFF, 0x00,
 
 	0x00, 0xFF, 0x00, // t
 	0xFF, 0xFF, 0xFF,
@@ -412,6 +412,11 @@ void block_replace(unsigned char x, unsigned char y, unsigned char a, unsigned c
 	}
 };
 
+#define P1COL1 0xAA
+#define P1COL2 0x55
+#define P2COL1 0x66
+#define P2COL2 0x88
+
 void main(void)
 {
 	// turn off analog
@@ -494,6 +499,7 @@ void main(void)
 
 	unsigned char first[2] = { 1, 1 };
 	unsigned char gameover[2] = { 0, 0 };
+	unsigned char garbage[2] = { 0, 0 };
 
 	unsigned char flag;
 	unsigned char comp;
@@ -554,6 +560,7 @@ void main(void)
 					score[p] = 0;
 					grav[p] = 0;
 					bag[p] = 0x7E;
+					garbage[p] = 0;
 
 					// reset field
 					if (p == 0)
@@ -594,13 +601,13 @@ void main(void)
 
 			if (p == 0)
 			{
-				col1 = 0xAA; // magenta
-				col2 = 0x55; // green
+				col1 = P1COL1; // magenta
+				col2 = P1COL2; // green
 			}
 			else
 			{
-				col1 = 0x66; // cyan
-				col2 = 0x88; // red
+				col1 = P2COL1; // cyan
+				col2 = P2COL2; // red
 			}
 
 			// store previous state
@@ -950,14 +957,16 @@ void main(void)
 									{
 										for (k=1; k<11; k++)
 										{
-											block_write(k, j, block_read(k, j-1));
+											flag = block_read(k, j-1);
+											block_write(k, j, flag);
 										}
 									}
 									else
 									{
 										for (k=13; k<23; k++)
 										{
-											block_write(k, j, block_read(k, j-1));
+											flag = block_read(k, j-1);
+											block_write(k, j, flag);
 										}
 									}
 								}
@@ -968,9 +977,69 @@ void main(void)
 							}
 						}
 
-						// bigger values for more lines
-						if (comp == 3) comp = 4;
-						else if (comp == 4) comp = 8;
+						// add garbage lines
+						while (garbage[p] > 0)
+						{
+							while ((seed & 0x0F) >= 0x0A)
+							{
+								seed = seed * 5 + 17;
+							}
+
+							for (i=1; i<20; i++)
+							{
+								for (j=1+12*p; j<11+12*p; j++)
+								{
+									k = block_read(j, i+1);
+									block_write(j, i, k);
+								}
+							}
+
+							for (i=1+12*p; i<11+12*p; i++)
+							{
+								block_write(i, 20, col2);
+							}
+
+							block_write((seed & 0x0F) + 1 + 12*p, 20, 0x00);
+
+							seed = seed * 5 + 17;
+
+							garbage[p]--;
+						}
+
+						// clear garbage indicator
+						for (i=1+12*p; i<11+12*p; i++)
+						{
+							block_write(i, 21, 0xFF);
+						}
+
+						// bigger values for more lines and garbage
+						if (comp == 2)
+						{
+							comp = 2;
+
+							garbage[1-p] = 1;
+						}
+						else if (comp == 3)
+						{
+							comp = 4;
+
+							garbage[1-p] = 2;
+						}
+						else if (comp == 4)
+						{
+							comp = 8;
+
+							garbage[1-p] = 3;
+						}
+
+						// show garbage indicator
+						if (garbage[1-p] > 0)
+						{
+							for (i=1+12*(1-p); i<11+12*(1-p); i++)
+							{
+								block_write(i, 21, col2);
+							}
+						}
 
 						while (comp > 0)
 						{
