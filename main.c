@@ -9,7 +9,7 @@
 
 // CONFIG1
 //#pragma config FOSC = INTRC_NOCLKOUT// Oscillator Selection bits (INTOSCIO oscillator: I/O function on RA6/OSC2/CLKOUT pin, I/O function on RA7/OSC1/CLKIN)
-#pragma config FOSC = EC
+#pragma config FOSC = HS        // Oscillator Selection bits (HS oscillator: High-speed crystal/resonator on RA6/OSC2/CLKOUT and RA7/OSC1/CLKIN)
 #pragma config WDTE = OFF       // Watchdog Timer Enable bit (WDT disabled and can be enabled by SWDTEN bit of the WDTCON register)
 #pragma config PWRTE = OFF      // Power-up Timer Enable bit (PWRT disabled)
 #pragma config MCLRE = ON       // RE3/MCLR pin function select bit (RE3/MCLR pin function is MCLR)
@@ -412,11 +412,12 @@ void block_replace(unsigned char x, unsigned char y, unsigned char a, unsigned c
 	}
 };
 
-#define P1COL1 0xAA
-#define P1COL2 0x55
-#define P2COL1 0x66
-#define P2COL2 0x88
+#define P1COL1 0xBB // bright magenta
+#define P1COL2 0x44 // dark green
+#define P2COL1 0x77 // bright cyan
+#define P2COL2 0x88 // dark red
 
+// needs a 20 MHz crystal
 void main(void)
 {
 	// turn off analog
@@ -425,15 +426,15 @@ void main(void)
 
 	// initial settings for all pins
 	PORTA = 0x00;
-	TRISA = 0x3F; // JOY1
+	TRISA = 0xFF; // JOY1, CRYSTAL
 	PORTB = 0x00;
 	TRISB = 0xFF; // JOY2, ISCP
 	PORTC = 0x06;
-	TRISC = 0x80; // RX/TX, H-SYNC/V-SYNC, JOY-SELECT
+	TRISC = 0x80; // RX/TX, SPI, H-SYNC/V-SYNC
 	PORTD = 0x00;
 	TRISD = 0x0F; // VGA
-	PORTE = 0x00;
-	TRISE = 0x00; // ???
+	PORTE = 0x01;
+	TRISE = 0x01; // JOY-SELECT
 
 	// disable interrupts
 	OPTION_REG = 0x00;
@@ -441,10 +442,6 @@ void main(void)
 	PIE1 = 0x00;
 	PIE2 = 0x00;
 	PCON = 0x03;
-
-	// set to run on external crystal (20 MHz)
-//	OSCCON = 0x40; // XT mode
-//	while (OSCCONbits.OSTS == 0) { } // wait until stable
 
 	// set up memory
 	for (i=0; i<48; i++)
@@ -547,7 +544,8 @@ void main(void)
 			// if gameover, start play again?
 			if (gameover[p] > 0)	
 			{
-				if (PORTAbits.RA1 == 0)
+				if ((p == 0 && (PORTAbits.RA4 == 0 || PORTAbits.RA5 == 0)) ||
+					(p == 1 && (PORTBbits.RB4 == 0 || PORTBbits.RB5 == 0)))
 				{	
 					gameover[p] = 0;
 
@@ -638,7 +636,22 @@ void main(void)
 			if (posy[p] == prev_y)
 			{
 				// check buttons
-				if (PORTAbits.RA0 == 0) // left
+				if ((p == 0 && PORTAbits.RA1 == 0) ||
+					(p == 1 && PORTBbits.RB1 == 0)) // down
+				{
+					seed++;
+
+					if (delay[p] == 0)
+					{
+						grav[p] = 0;
+						posy[p]++;
+					}
+
+					delay[p]++;
+					if (delay[p] >= 2) delay[p] = 0;
+				}
+				else if ((p == 0 && PORTAbits.RA3 == 0) ||
+					(p == 1 && PORTBbits.RB3 == 0)) // left
 				{
 					seed++;
 
@@ -650,7 +663,8 @@ void main(void)
 					delay[p]++;
 					if (delay[p] >= 4) delay[p] = 0;
 				}
-				else if (PORTAbits.RA2 == 0) // right
+				else if ((p == 0 && PORTAbits.RA2 == 0) ||
+					(p == 1 && PORTBbits.RB2 == 0)) // right
 				{
 					seed++;
 			
@@ -662,7 +676,8 @@ void main(void)
 					delay[p]++;
 					if (delay[p] >= 4) delay[p] = 0;
 				}
-				else if (PORTAbits.RA1 == 0) // rotate
+				else if ((p == 0 && PORTAbits.RA4 == 0) ||
+					(p == 1 && PORTBbits.RB4 == 0)) // rotate ccw
 				{
 					seed++;
 
@@ -679,6 +694,29 @@ void main(void)
 						else // jlt
 						{
 							rot[p] = ((rot[p] + 1) & 0x03);
+						}
+					}
+
+					delay[p] = 1;
+				}
+				else if ((p == 0 && PORTAbits.RA5 == 0) ||
+					(p == 1 && PORTBbits.RB5 == 0)) // rotate cw
+				{
+					seed++;
+
+					if (delay[p] == 0)
+					{
+						if (piece[p] >= 2 && piece[p] <= 4) // isz
+						{
+							rot[p] = (rot[p] ^ 0x01);
+						}
+						else if (piece[p] == 6) // o
+						{
+							rot[p] = 0x00;
+						}
+						else // jlt
+						{
+							rot[p] = ((rot[p] - 1) & 0x03);
 						}
 					}
 
