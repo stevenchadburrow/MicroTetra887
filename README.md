@@ -9,6 +9,7 @@ Specifications:<br>
 - 368 bytes of RAM<br>
 - VGA resolution of 24x22 pixels at 16 colors<br>
 - Two-player "Tetra" through homebrew or Genesis controllers<br>
+- PCB's double as both the console and controllers<br>
 
 This is a work-in-progress.  This project will eventually use a PCB and have updated code.
 
