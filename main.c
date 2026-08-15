@@ -575,6 +575,11 @@ void main(void)
 								block_write(j, i, 0x00);
 							}
 						}
+
+						for (i=1; i<11; i++)
+						{
+							block_write(i, 21, 0xFF);
+						}
 					}
 					else
 					{
@@ -589,6 +594,11 @@ void main(void)
 							{
 								block_write(j, i, 0x00);
 							}
+						}
+
+						for (i=13; i<23; i++)
+						{
+							block_write(i, 21, 0xFF);
 						}
 					}
 
