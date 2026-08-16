@@ -155,7 +155,7 @@ scale([1,-1,1])
 		union()
 		{
 			// screw supports
-			translate([4.75,4.75,0])
+			translate([4,4,0])
 			{
 				difference()
 				{
@@ -163,7 +163,7 @@ scale([1,-1,1])
 					cylinder(20,1.0,1.0);
 				}
 			}
-			translate([95.25,4.75,0])
+			translate([96,4,0])
 			{
 				difference()
 				{
@@ -171,7 +171,7 @@ scale([1,-1,1])
 					cylinder(20,1.0,1.0);
 				}
 			}
-			translate([4.75,95.25,0])
+			translate([4,96,0])
 			{
 				difference()
 				{
@@ -179,7 +179,7 @@ scale([1,-1,1])
 					cylinder(20,1.0,1.0);
 				}
 			}
-			translate([95.25,95.25,0])
+			translate([96,96,0])
 			{
 				difference()
 				{
