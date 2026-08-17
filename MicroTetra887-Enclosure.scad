@@ -263,9 +263,9 @@ module button()
 				cylinder(100, 3.5, 3.5);
 			}
 		}
-		translate([-1.5, -1.5, 0])
+		translate([-1.35, -1.35, 0])
 		{
-			cube([3.0, 3.0, 3.0]);
+			cube([2.7, 2.7, 3.0]);
 		}
 	}
 }
