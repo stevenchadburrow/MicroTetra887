@@ -11,8 +11,6 @@ Specifications:<br>
 - Two-player "Tetra" through homebrew or Genesis controllers<br>
 - PCB's double as both the console and controllers<br>
 
-This is a work-in-progress.  This project will eventually use a PCB and have updated code.
-
 <table>
   <tr><td><img src="MicroTetra887-Full.jpg"></td><td><img src="MicroTetra887-Enclosures.jpg"></td></tr>
   <tr><td><img src="MicroTetra887-Game1.jpg"></td><td><img src="MicroTetra887-Game2.jpg"></td></tr>
